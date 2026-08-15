@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rademacher Mietzettel</title>
+<style>
+:root{--ink:#151515;--muted:#5e6268;--line:#8b8f94;--blue:#173a67;--red:#a5262a;--paper:#fff;--bg:#eceff2;--soft:#f7f8f9}
+*{box-sizing:border-box}html,body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg)}body{padding:24px}
+.toolbar{max-width:1180px;margin:0 auto 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.toolbar-left h1{font-size:19px;margin:0 0 4px;letter-spacing:-.2px}.toolbar-left p{margin:0;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:1px solid #c9ced4;background:#fff;border-radius:7px;padding:10px 14px;font:600 13px Arial,sans-serif;cursor:pointer;color:#1d2733}button:hover{background:#f3f5f7}button.primary{background:#16375f;color:#fff;border-color:#16375f}button.primary:hover{background:#102d4f}
+.sheet{max-width:1180px;margin:0 auto;background:var(--paper);box-shadow:0 12px 36px rgba(19,31,45,.12);padding:18px 20px 22px}.company-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:10px;gap:20px}.company{font-size:24px;font-weight:700;letter-spacing:.3px;color:#16375f}.company small{display:block;font-size:12px;letter-spacing:1.6px;color:#4f5c6c;margin-top:2px}.doc-title{font-size:12px;text-align:right;color:#60666e;line-height:1.5}
+.section{border:2px solid var(--ink);margin-top:12px}.section-title-row{min-height:42px;display:grid;grid-template-columns:auto 1fr;align-items:center;border-bottom:1px solid var(--ink);gap:18px;padding:4px 10px}.section-title{font-size:21px;font-weight:700;letter-spacing:-.3px;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;white-space:nowrap}.section.out .section-title{color:var(--red)}.section.in .section-title{color:var(--blue)}
+.top-dates{display:grid;grid-template-columns:repeat(4,minmax(105px,1fr));gap:8px;align-items:end}.mini-field label{display:block;font-size:11px;color:#444;text-align:center;margin-bottom:2px}.form-body{padding:8px 10px 10px}.grid{display:grid;gap:5px 12px}.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,1fr)}.grid.four{grid-template-columns:repeat(4,1fr)}
+.field{display:grid;grid-template-columns:150px 1fr;align-items:end;min-height:34px}.field.compact{grid-template-columns:95px 1fr}.field.wide-label{grid-template-columns:260px 1fr}.field label{font-weight:700;font-size:14px;padding:0 7px 5px 0;white-space:nowrap}
+input[type="text"],input[type="number"],input[type="date"],input[type="time"],textarea{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;border-radius:0;padding:5px 4px 4px;min-height:30px;outline:none;font:15px Arial,sans-serif}textarea{min-height:54px;resize:vertical;border:1px solid #aeb3b8;padding:8px;margin-top:5px}input:focus,textarea:focus{background:#f7fbff;border-color:#315d8d}
+.row{display:grid;grid-template-columns:150px 1fr;min-height:34px;align-items:center}.row-label{font-size:14px;font-weight:700;padding-right:8px}.options{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;padding:3px 0}.check,.radio{display:inline-flex;align-items:center;gap:5px;font-size:13px;white-space:nowrap}
+input[type="checkbox"],input[type="radio"]{appearance:none;-webkit-appearance:none;width:15px;height:15px;border:1.5px solid #4b4f54;background:#fff;margin:0;position:relative;flex:0 0 auto}input[type="radio"]{border-radius:50%}input[type="checkbox"]:checked::after{content:"";position:absolute;width:8px;height:4px;border-left:2px solid #173a67;border-bottom:2px solid #173a67;transform:rotate(-45deg);top:3px;left:2px}input[type="radio"]:checked::after{content:"";position:absolute;inset:3px;background:#173a67;border-radius:50%}
+.line{border-top:1px solid #c3c7cb;margin:5px -10px}.subheading{font-size:14px;font-weight:700;margin:7px 0 3px}.delivery-line{display:grid;grid-template-columns:150px 1fr;align-items:center;min-height:36px}.inline-fields{display:grid;grid-template-columns:auto 1fr auto 1fr auto 1fr;gap:6px;align-items:end}.inline-fields span{font-size:13px;white-space:nowrap;padding-bottom:5px}.signature{margin-top:10px;border-top:1px solid var(--ink);padding-top:5px;font-weight:700;font-size:14px;display:grid;grid-template-columns:230px 1fr;gap:10px}.signature input{border-bottom:1px solid var(--ink)}
+.note-box{margin-top:12px;padding:9px 11px;border:1px solid #d4d8dc;background:var(--soft);color:#565c63;font-size:12px;line-height:1.45}.status{font-size:12px;color:#5d6772}.status.saved{color:#19704a}
+@media (max-width:900px){body{padding:10px}.sheet{padding:10px}.company-head{align-items:flex-start;flex-direction:column}.doc-title{text-align:left}.section-title-row{grid-template-columns:1fr}.top-dates{grid-template-columns:1fr 1fr}.grid.two,.grid.three,.grid.four{grid-template-columns:1fr}.field,.field.compact,.field.wide-label,.row,.delivery-line{grid-template-columns:1fr}.field label,.row-label{padding-top:5px}.inline-fields{grid-template-columns:auto 1fr}.signature{grid-template-columns:1fr}}
+@media print{@page{size:A4 portrait;margin:8mm}body{background:#fff;padding:0}.toolbar,.note-box{display:none!important}.sheet{max-width:none;width:100%;box-shadow:none;padding:0}.company-head{margin-bottom:5px}.company{font-size:17px}.company small{font-size:8px}.doc-title{font-size:8px}.section{margin-top:6px}.section-title-row{min-height:27px;padding:2px 6px}.section-title{font-size:15px}.form-body{padding:4px 6px}.field,.row,.delivery-line{min-height:24px}.field label,.row-label,.subheading{font-size:9.5px}input[type="text"],input[type="number"],input[type="date"],input[type="time"]{min-height:21px;font-size:10px;padding:2px 3px}textarea{min-height:34px;font-size:10px}.check,.radio,.inline-fields span{font-size:9px}input[type="checkbox"],input[type="radio"]{width:11px;height:11px}.options{gap:4px 8px}.line{margin:3px -6px}.signature{margin-top:5px;font-size:9.5px}}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <div class="toolbar-left"><h1>Digitaler Mietzettel</h1><p>Grundversion · lokal im Browser speicherbar · für PDF/Druck optimiert</p></div>
+  <div class="actions"><span class="status" id="status">Nicht gespeichert</span><button type="button" id="saveBtn">Entwurf speichern</button><button type="button" id="resetBtn">Neuer Mietzettel</button><button type="button" class="primary" id="printBtn">Drucken / PDF</button></div>
+</div>
+
+<form class="sheet" id="rentalForm" autocomplete="off">
+<header class="company-head"><div class="company">RADEMACHER<small>BAUMASCHINENSERVICE</small></div><div class="doc-title">DIGITALER MIETZETTEL<br>Maschinen-Ausgang / Maschinen-Eingang</div></header>
+
+<section class="section out">
+  <div class="section-title-row"><div class="section-title">Maschinen-AUSGANG</div><div class="top-dates">
+    <div class="mini-field"><label>abgeholt am · Datum</label><input type="date" name="out_pickup_date"></div>
+    <div class="mini-field"><label>Uhrzeit</label><input type="time" name="out_pickup_time"></div>
+    <div class="mini-field"><label>Miete ab · Datum</label><input type="date" name="rent_from_date"></div>
+    <div class="mini-field"><label>Uhrzeit</label><input type="time" name="rent_from_time"></div>
+  </div></div>
+  <div class="form-body">
+    <div class="grid two">
+      <div class="field"><label>Name Kunde:</label><input type="text" name="customer_name"></div><div class="field compact"><label>Tel.:</label><input type="text" name="customer_phone"></div>
+      <div class="field"><label>Adresse:</label><input type="text" name="customer_address"></div><div class="field compact"><label>Baustelle:</label><input type="text" name="site"></div>
+    </div>
+    <div class="grid two"><div class="field"><label>Maschinentyp:</label><input type="text" name="machine_type"></div><div class="field"><label>Zusatz / Anbaugerät:</label><input type="text" name="machine_addon"></div></div>
+    <div class="grid two">
+      <div class="field"><label>Anfangsstunden:</label><input type="number" step="0.1" name="start_hours"></div>
+      <div class="row"><div class="row-label">Diesel</div><div class="options">
+        <label class="radio"><input type="radio" name="diesel_out" value="leer"> leer</label><label class="radio"><input type="radio" name="diesel_out" value="viertel voll"> viertel voll</label><label class="radio"><input type="radio" name="diesel_out" value="halb voll"> halb voll</label><label class="radio"><input type="radio" name="diesel_out" value="dreiviertel voll"> dreiviertel voll</label><label class="radio"><input type="radio" name="diesel_out" value="voll"> voll</label>
+      </div></div>
+      <div class="field"><label>Fzg-Nr.:</label><input type="text" name="vehicle_number"></div>
+      <div class="row"><div class="row-label">Ad Blue</div><div class="options">
+        <label class="radio"><input type="radio" name="adblue_out" value="leer"> leer</label><label class="radio"><input type="radio" name="adblue_out" value="viertel voll"> viertel voll</label><label class="radio"><input type="radio" name="adblue_out" value="halb voll"> halb voll</label><label class="radio"><input type="radio" name="adblue_out" value="dreiviertel voll"> dreiviertel voll</label><label class="radio"><input type="radio" name="adblue_out" value="voll"> voll</label>
+      </div></div>
+    </div>
+    <div class="line"></div>
+    <div class="row"><div class="row-label">Löffelart:</div><div class="options">
+      <label class="check"><input type="checkbox" name="bucket_out_swing"> Schwenklöffel</label><label class="check"><input type="checkbox" name="bucket_out_30"> 30ger</label><label class="check"><input type="checkbox" name="bucket_out_40"> 40ger</label><label class="check"><input type="checkbox" name="bucket_out_50"> 50ger</label><label class="check"><input type="checkbox" name="bucket_out_60"> 60ger</label><label class="check"><input type="checkbox" name="bucket_out_70"> 70ger</label><label class="check"><input type="checkbox" name="bucket_out_80"> 80ger</label><label class="check"><input type="checkbox" name="bucket_out_1m"> 1 m</label>
+    </div></div>
+    <div class="row"><div class="row-label">Löffel mit Zähne:</div><div class="options">
+      <label class="check"><input type="checkbox" name="tooth_out_sort"> Sortiergreifer</label><label class="check"><input type="checkbox" name="tooth_out_30"> 30ger</label><label class="check"><input type="checkbox" name="tooth_out_40"> 40ger</label><label class="check"><input type="checkbox" name="tooth_out_50"> 50ger</label><label class="check"><input type="checkbox" name="tooth_out_60"> 60ger</label><label class="check"><input type="checkbox" name="tooth_out_70"> 70ger</label><label class="check"><input type="checkbox" name="tooth_out_80"> 80ger</label><label class="check"><input type="checkbox" name="tooth_out_1m"> 1 m</label>
+    </div></div>
+    <div class="field"><label>Sonstige:</label><input type="text" name="other_out"></div>
+    <div class="line"></div><div class="subheading">zusätzliche Auslieferungsgegenstände:</div>
+    <div class="grid two">
+      <div class="options"><label class="check"><input type="checkbox" name="extra_out_grease"> Fettpresse</label><label class="check"><input type="checkbox" name="extra_out_broom"> Besen</label><label class="check"><input type="checkbox" name="extra_out_straps"> Spanngurte-Ketten</label></div>
+      <div class="row"><div class="row-label">Maschine sauber übergeben</div><div class="options"><label class="radio"><input type="radio" name="clean_handover" value="ja"> ja</label><label class="radio"><input type="radio" name="clean_handover" value="nein"> nein</label></div></div>
+    </div>
+    <div class="field"><label>Sonstige:</label><input type="text" name="extra_out_other"></div>
+    <div class="row"><div class="row-label">Auslieferungsart:</div><div class="options"><label class="radio"><input type="radio" name="delivery_type" value="geliefert"> geliefert</label><label class="radio"><input type="radio" name="delivery_type" value="von Kunde abgeholt"> von Kunde abgeholt</label></div></div>
+    <div class="delivery-line"><div class="row-label">Lieferzeit:</div><div class="inline-fields"><span>von:</span><input type="time" name="delivery_from"><span>bis:</span><input type="time" name="delivery_to"><span>Std.:</span><input type="number" step="0.25" name="delivery_hours"></div></div>
+    <div class="field wide-label"><label>Maut (EUR):</label><input type="number" step="0.01" name="toll_out"></div>
+    <div class="row"><div class="row-label">Ausgeliefert mit:</div><div class="options"><label class="check"><input type="checkbox" name="vehicle_out_transporter"> Transporter u. Anhänger</label><label class="check"><input type="checkbox" name="vehicle_out_75"> 7,5 to LKW</label><label class="check"><input type="checkbox" name="vehicle_out_lowloader"> LKW mit Tieflader</label></div></div>
+    <div class="signature"><span>Datum / Unterschrift Mieter</span><input type="text" name="tenant_signature" placeholder="Name / digitale Bestätigung"></div>
+  </div>
+</section>
+
+<section class="section in">
+  <div class="section-title-row"><div class="section-title">Maschinen-EINGANG</div><div class="top-dates">
+    <div class="mini-field"><label>zurück am · Datum</label><input type="date" name="in_return_date"></div><div class="mini-field"><label>Uhrzeit</label><input type="time" name="in_return_time"></div><div class="mini-field"><label>Miete bis · Datum</label><input type="date" name="rent_until_date"></div><div class="mini-field"><label>Uhrzeit</label><input type="time" name="rent_until_time"></div>
+  </div></div>
+  <div class="form-body">
+    <div class="grid two">
+      <div class="field"><label>Endstunden:</label><input type="number" step="0.1" name="end_hours"></div>
+      <div class="row"><div class="row-label">Tank:</div><div class="options"><label class="radio"><input type="radio" name="diesel_in" value="leer"> leer</label><label class="radio"><input type="radio" name="diesel_in" value="viertel voll"> viertel voll</label><label class="radio"><input type="radio" name="diesel_in" value="halb voll"> halb voll</label><label class="radio"><input type="radio" name="diesel_in" value="dreiviertel voll"> dreiviertel voll</label><label class="radio"><input type="radio" name="diesel_in" value="voll"> voll</label></div></div>
+      <div></div>
+      <div class="row"><div class="row-label">Ad Blue:</div><div class="options"><label class="radio"><input type="radio" name="adblue_in" value="leer"> leer</label><label class="radio"><input type="radio" name="adblue_in" value="viertel voll"> viertel voll</label><label class="radio"><input type="radio" name="adblue_in" value="halb voll"> halb voll</label><label class="radio"><input type="radio" name="adblue_in" value="dreiviertel voll"> dreiviertel voll</label><label class="radio"><input type="radio" name="adblue_in" value="voll"> voll</label></div></div>
+    </div>
+    <div class="grid two"><div class="field"><label>Diesel nachgetankt:</label><input type="number" step="0.1" name="diesel_refilled" placeholder="Liter"></div><div class="field"><label>Ad Blue:</label><input type="number" step="0.1" name="adblue_refilled" placeholder="Liter"></div></div>
+    <div class="line"></div>
+    <div class="row"><div class="row-label">Löffelart:</div><div class="options"><label class="check"><input type="checkbox" name="bucket_in_swing"> Schwenklöffel</label><label class="check"><input type="checkbox" name="bucket_in_30"> 30ger</label><label class="check"><input type="checkbox" name="bucket_in_40"> 40ger</label><label class="check"><input type="checkbox" name="bucket_in_50"> 50ger</label><label class="check"><input type="checkbox" name="bucket_in_60"> 60ger</label><label class="check"><input type="checkbox" name="bucket_in_70"> 70ger</label><label class="check"><input type="checkbox" name="bucket_in_80"> 80ger</label><label class="check"><input type="checkbox" name="bucket_in_1m"> 1 m</label></div></div>
+    <div class="row"><div class="row-label">Löffel mit Zähne:</div><div class="options"><label class="check"><input type="checkbox" name="tooth_in_sort"> Sortiergreifer</label><label class="check"><input type="checkbox" name="tooth_in_30"> 30ger</label><label class="check"><input type="checkbox" name="tooth_in_40"> 40ger</label><label class="check"><input type="checkbox" name="tooth_in_50"> 50ger</label><label class="check"><input type="checkbox" name="tooth_in_60"> 60ger</label><label class="check"><input type="checkbox" name="tooth_in_70"> 70ger</label><label class="check"><input type="checkbox" name="tooth_in_80"> 80ger</label><label class="check"><input type="checkbox" name="tooth_in_1m"> 1 m</label></div></div>
+    <div class="field"><label>Sonstige:</label><input type="text" name="other_in"></div>
+    <div class="line"></div><div class="subheading">Rückgabe zusätzlicher Auslieferungsgegenstände:</div>
+    <div class="options"><label class="check"><input type="checkbox" name="extra_in_grease"> Fettpresse</label><label class="check"><input type="checkbox" name="extra_in_broom"> Besen</label><label class="check"><input type="checkbox" name="extra_in_straps"> Spanngurte-Ketten</label><label class="check"><input type="checkbox" name="extra_in_adapter"> 12 Volt-Adapter</label></div>
+    <div class="field"><label>Sonstige:</label><input type="text" name="extra_in_other"></div>
+    <div class="row"><div class="row-label">Rücklieferungsart:</div><div class="options"><label class="radio"><input type="radio" name="return_type" value="abgeholt"> abgeholt</label><label class="radio"><input type="radio" name="return_type" value="durch Kunde zurück gebracht"> durch Kunde zurück gebracht</label></div></div>
+    <div class="delivery-line"><div class="row-label">Abholungszeit (von/bis):</div><div class="inline-fields"><span>von:</span><input type="time" name="pickup_from"><span>bis:</span><input type="time" name="pickup_to"><span>Std.:</span><input type="number" step="0.25" name="pickup_hours"></div></div>
+    <div class="field wide-label"><label>Maut (EUR):</label><input type="number" step="0.01" name="toll_in"></div>
+    <div class="row"><div class="row-label">Abgeholt mit:</div><div class="options"><label class="check"><input type="checkbox" name="vehicle_in_transporter"> Transporter u. Anhänger</label><label class="check"><input type="checkbox" name="vehicle_in_75"> 7,5 to LKW</label><label class="check"><input type="checkbox" name="vehicle_in_lowloader"> LKW mit Tieflader</label></div></div>
+    <div class="field wide-label"><label>Beschädigungen an Maschine:</label><input type="text" name="damage"></div><div class="field wide-label"><label style="color:#9b2d32">Verschmutzungen Maschine:</label><input type="text" name="dirt"></div>
+  </div>
+</section>
+
+<div class="note-box">Diese Grundversion speichert den aktuellen Mietzettel ausschließlich lokal im Browser des verwendeten Geräts. Eine Kundenverwaltung, Maschinenverwaltung, Foto-Upload, digitale Unterschrift und zentrale Datenbank können später ergänzt werden.</div>
+</form>
+<script>
+const form=document.getElementById('rentalForm');const statusEl=document.getElementById('status');const STORAGE_KEY='rademacher_mietzettel_draft_v1';
+function serializeForm(){const data={};form.querySelectorAll('input,textarea,select').forEach(el=>{if(!el.name)return;if(el.type==='checkbox'){data[el.name]=el.checked;return}if(el.type==='radio'){if(el.checked)data[el.name]=el.value;else if(!(el.name in data))data[el.name]='';return}data[el.name]=el.value});return data}
+function restoreForm(data){form.querySelectorAll('input,textarea,select').forEach(el=>{if(!el.name||!(el.name in data))return;if(el.type==='checkbox'){el.checked=Boolean(data[el.name]);return}if(el.type==='radio'){el.checked=data[el.name]===el.value;return}el.value=data[el.name]??''})}
+function saveDraft(showMessage=true){localStorage.setItem(STORAGE_KEY,JSON.stringify(serializeForm()));statusEl.textContent='Gespeichert';statusEl.classList.add('saved');if(showMessage){setTimeout(()=>statusEl.textContent='Entwurf lokal gespeichert',700)}}
+function resetForm(){if(!confirm('Neuen Mietzettel starten? Der aktuell gespeicherte Entwurf wird gelöscht.'))return;form.reset();localStorage.removeItem(STORAGE_KEY);statusEl.textContent='Neuer Mietzettel';statusEl.classList.remove('saved')}
+document.getElementById('saveBtn').addEventListener('click',()=>saveDraft(true));document.getElementById('resetBtn').addEventListener('click',resetForm);document.getElementById('printBtn').addEventListener('click',()=>{saveDraft(false);window.print()});form.addEventListener('input',()=>{statusEl.textContent='Änderungen nicht gespeichert';statusEl.classList.remove('saved')});window.addEventListener('DOMContentLoaded',()=>{const saved=localStorage.getItem(STORAGE_KEY);if(saved){try{restoreForm(JSON.parse(saved));statusEl.textContent='Gespeicherten Entwurf geladen';statusEl.classList.add('saved')}catch(e){}}});
+</script>
+</body>
+</html>
